@@ -16,8 +16,8 @@ Follows the same conventions as
 
 **Intel Mac (x86_64)** — MacBook Pro 2020, Intel Core i7, macOS Tahoe 26.3:
 
-![SF64 Title Screen — Intel Mac](src/screenshots/starship-macalfa-screenshot001.png)
-![SF64 Gameplay — Intel Mac](src/screenshots/starship-macalfa-screenshot002.png)
+![SF64 Title Screen — Intel Mac](src/screenshots/starship-macalfa-screenshot001.jpg)
+![SF64 Gameplay — Intel Mac](src/screenshots/starship-macalfa-screenshot002.jpg)
 
 **Apple Silicon (arm64)** — confirmed via Rosetta 2:
 
