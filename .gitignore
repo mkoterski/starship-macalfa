@@ -1,0 +1,16 @@
+# Upstream game source — cloned automatically by smca-build-macos.sh
+Starship/
+
+# Build artefacts
+*.dmg
+*.o2r
+*.z64
+
+# Distribution output
+dist/
+
+# Script logs
+logs/
+
+# macOS noise
+.DS_Store
