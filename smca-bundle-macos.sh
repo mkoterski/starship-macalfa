@@ -24,7 +24,8 @@ BINARY="$BUILD_DIR/Starship"
 BUNDLE="$BUILD_DIR/Starship.app"
 ICONSET="$BUILD_DIR/macosx/starship.iconset"
 ICNS="$BUILD_DIR/macosx/starship.icns"
-ICON_SRC="$SCRIPT_DIR/smca-macalfa-icon.png"
+ICNS_SRC="$SCRIPT_DIR/src/smca-icon.icns"
+ICON_SRC="$SCRIPT_DIR/src/smca-icon.png"
 
 LOG_DIR="$SCRIPT_DIR/logs"
 LOGFILE="$LOG_DIR/bundle-$(date '+%Y%m%d-%H%M').log"
@@ -57,7 +58,10 @@ echo "🖼  Step 1: Generate .icns" | tee -a "$LOGFILE"
 
 mkdir -p "$(dirname "$ICNS")"
 
-if [[ -d "$ICONSET" ]]; then
+if [[ -f "$ICNS_SRC" ]]; then
+  echo "   Using pre-made src/smca-icon.icns..." | tee -a "$LOGFILE"
+  cp "$ICNS_SRC" "$ICNS"
+elif [[ -d "$ICONSET" ]]; then
   echo "   Using build iconset..." | tee -a "$LOGFILE"
   iconutil -c icns "$ICONSET" -o "$ICNS" 2>&1 | tee -a "$LOGFILE"
 elif [[ -f "$ICON_SRC" ]]; then

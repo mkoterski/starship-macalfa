@@ -39,7 +39,8 @@ DMG_STAGING="$DIST_DIR/${DMG_NAME}-staging"
 DMG_TMP="$DIST_DIR/${DMG_NAME}-tmp.dmg"
 DMG_VOLUME="Starship SF64"
 DMG_SIZE="120m"
-ICON_SRC="$SCRIPT_DIR/smca-macalfa-icon.png"
+ICON_SRC="$SCRIPT_DIR/src/smca-icon.png"
+ICNS_SRC="$SCRIPT_DIR/src/smca-icon.icns"
 TIMESTAMP="$(date '+%Y%m%d-%H%M')"
 
 LOG_DIR="$SCRIPT_DIR/logs"
@@ -89,7 +90,10 @@ echo "🖼  Step 1: Generate .icns" | tee -a "$LOGFILE"
 
 ICNS_PATH="$DIST_DIR/smca-macalfa.icns"
 
-if [[ -f "$ICON_SRC" ]]; then
+if [[ -f "$ICNS_SRC" ]]; then
+  cp "$ICNS_SRC" "$ICNS_PATH"
+  echo "   ✅ Using pre-made src/smca-icon.icns: $(du -h "$ICNS_PATH" | cut -f1)" | tee -a "$LOGFILE"
+elif [[ -f "$ICON_SRC" ]]; then
   ICONSET_DIR="$DIST_DIR/smca-macalfa.iconset"
   rm -rf "$ICONSET_DIR"
   mkdir -p "$ICONSET_DIR"
