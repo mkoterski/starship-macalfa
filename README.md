@@ -12,9 +12,22 @@ Follows the same conventions as
 
 ---
 
+## Confirmed Working
+
+**Intel Mac (x86_64)** — MacBook Pro 2020, Intel Core i7, macOS Tahoe 26.3:
+
+![SF64 Title Screen — Intel Mac](src/screenshots/starship-macalfa-screenshot001.png)
+![SF64 Gameplay — Intel Mac](src/screenshots/starship-macalfa-screenshot002.png)
+
+**Apple Silicon (arm64)** — confirmed via Rosetta 2:
+
+![SF64 — Apple Silicon via Rosetta 2](src/screenshots/Screenshot_2026-03-07_at_13.37.53.png)
+
+---
+
 ## Requirements
 
-* Intel Mac (x86_64)
+* Intel Mac (x86_64) — or Apple Silicon via Rosetta 2
 * macOS 12.0 or later (tested on Tahoe 26.3)
 * Internet connection (first run only)
 * A Star Fox 64 ROM (see above)
