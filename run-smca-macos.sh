@@ -37,7 +37,7 @@ BUILD_DIR="$REPO_DIR/build-cmake"
 BINARY="$BUILD_DIR/Starship"
 CFG="$BUILD_DIR/starship.cfg.json"
 TORCH="$BUILD_DIR/TorchExternal/src/TorchExternal-build/torch"
-ROM_FILE="$REPO_DIR/baserom.us.rev1.z64"
+ROM_FILE="$REPO_DIR/baserom.z64"
 GAMEDB="$BUILD_DIR/gamecontrollerdb.txt"
 GAMEDB_URL="https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt"
 TIMESTAMP="$(date '+%Y%m%d-%H%M')"
@@ -161,18 +161,17 @@ fi
 # ── sf64.o2r ──────────────────────────────────────────────────────────────────
 
 if [[ ! -f "$BUILD_DIR/sf64.o2r" ]]; then
-  if [[ -x "$TORCH" && -f "$ROM_FILE" ]]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [info] Generating sf64.o2r..." | tee -a "$LOGFILE"
-    (cd "$BUILD_DIR" && "$TORCH" o2r "$ROM_FILE" 2>&1 | tee -a "$LOGFILE")
-  else
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [warn] Cannot generate sf64.o2r — Torch or ROM missing" | tee -a "$LOGFILE"
-  fi
+  echo "$(date '+%Y-%m-%d %H:%M:%S') [info] Generating sf64.o2r (ExtractAssets)..." | tee -a "$LOGFILE"
+  cmake --build "$BUILD_DIR" --target ExtractAssets 2>&1 | tee -a "$LOGFILE" || \
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [warn] ExtractAssets failed — run ./smca-build-macos.sh" | tee -a "$LOGFILE"
 fi
 
 # ── starship.o2r ──────────────────────────────────────────────────────────────
 
 if [[ ! -f "$BUILD_DIR/starship.o2r" ]]; then
-  echo "$(date '+%Y-%m-%d %H:%M:%S') [warn] starship.o2r not found — run ./smca-build-macos.sh first" | tee -a "$LOGFILE"
+  echo "$(date '+%Y-%m-%d %H:%M:%S') [info] Generating starship.o2r (GeneratePortO2R)..." | tee -a "$LOGFILE"
+  cmake --build "$BUILD_DIR" --target GeneratePortO2R 2>&1 | tee -a "$LOGFILE" || \
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [warn] GeneratePortO2R failed — run ./smca-build-macos.sh" | tee -a "$LOGFILE"
 fi
 
 # ── Asset integrity check ─────────────────────────────────────────────────────

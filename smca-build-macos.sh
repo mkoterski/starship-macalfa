@@ -29,7 +29,7 @@ REPO_DIR="$SCRIPT_DIR/Starship"
 BUILD_DIR="$REPO_DIR/build-cmake"
 BINARY="$BUILD_DIR/Starship"
 ROM_SOURCE="$SCRIPT_DIR/roms/baserom.us.rev1.z64"
-ROM_FILE="$REPO_DIR/baserom.us.rev1.z64"
+ROM_FILE="$REPO_DIR/baserom.z64"
 TORCH="$BUILD_DIR/TorchExternal/src/TorchExternal-build/torch"
 TIMESTAMP="$(date '+%Y%m%d-%H%M')"
 
@@ -110,11 +110,24 @@ fi
 
 echo "" | tee -a "$LOGFILE"
 echo "⚙️  Step 6: CMake configure (Ninja, x86_64)" | tee -a "$LOGFILE"
+
+# SDL2: prefer Homebrew's cmake config over /Library/Frameworks/SDL2.framework
+# which has a broken sdl2-config.cmake on Tahoe (references /Library/Headers).
+SDL2_CMAKE_DIR="$(brew --prefix sdl2 2>/dev/null)/lib/cmake/SDL2"
+if [[ -d "$SDL2_CMAKE_DIR" ]]; then
+  echo "   SDL2: using Homebrew ($(brew --prefix sdl2))" | tee -a "$LOGFILE"
+  SDL2_FLAG="-DSDL2_DIR=$SDL2_CMAKE_DIR"
+else
+  echo "   SDL2: using system framework" | tee -a "$LOGFILE"
+  SDL2_FLAG=""
+fi
+
 cmake -G Ninja \
   -B"$BUILD_DIR" \
   -S"$REPO_DIR" \
   -DCMAKE_OSX_ARCHITECTURES=x86_64 \
   -DCMAKE_BUILD_TYPE=Release \
+  $SDL2_FLAG \
   2>&1 | tee -a "$LOGFILE"
 
 # ── Step 7: Build ─────────────────────────────────────────────────────────────
@@ -141,31 +154,36 @@ echo "   ✅ Built:  $(stat -f '%Sm' -t '%Y-%m-%d %H:%M:%S' "$BINARY")" | tee -a
 
 # ── Step 9: Generate o2r assets ───────────────────────────────────────────────
 
-# Torch is built as a cmake ExternalProject and generates sf64.o2r from the ROM.
-# starship.o2r is produced by the build itself. Both must be in build-cmake/.
+# Upstream cmake defines ExtractAssets (sf64.o2r) and GeneratePortO2R (starship.o2r)
+# as separate targets. They depend on TorchExternal (built automatically).
+# Torch runs from the SOURCE dir and expects the ROM as baserom.z64, then
+# cmake copies the .o2r files into the build dir.
 
 echo "" | tee -a "$LOGFILE"
-echo "🎮 Step 9: o2r assets" | tee -a "$LOGFILE"
+echo "🎮 Step 9: o2r assets (ExtractAssets + GeneratePortO2R)" | tee -a "$LOGFILE"
 
 if [[ ! -f "$BUILD_DIR/sf64.o2r" ]]; then
-  if [[ -x "$TORCH" ]]; then
-    echo "   Generating sf64.o2r via Torch..." | tee -a "$LOGFILE"
-    (cd "$BUILD_DIR" && "$TORCH" o2r "$ROM_FILE" 2>&1 | tee -a "$LOGFILE")
-  else
-    echo "   ⚠️  Torch not found at $TORCH — sf64.o2r must be generated manually" | tee -a "$LOGFILE"
-  fi
+  echo "   Building ExtractAssets (sf64.o2r via Torch)..." | tee -a "$LOGFILE"
+  cmake --build "$BUILD_DIR" --target ExtractAssets 2>&1 | tee -a "$LOGFILE" || \
+    echo "   ⚠️  ExtractAssets failed — sf64.o2r must be generated manually" | tee -a "$LOGFILE"
+fi
+
+if [[ ! -f "$BUILD_DIR/starship.o2r" ]]; then
+  echo "   Building GeneratePortO2R (starship.o2r via Torch)..." | tee -a "$LOGFILE"
+  cmake --build "$BUILD_DIR" --target GeneratePortO2R 2>&1 | tee -a "$LOGFILE" || \
+    echo "   ⚠️  GeneratePortO2R failed — starship.o2r must be generated manually" | tee -a "$LOGFILE"
 fi
 
 if [[ -f "$BUILD_DIR/sf64.o2r" ]]; then
   echo "   ✅ sf64.o2r:     $(du -h "$BUILD_DIR/sf64.o2r" | cut -f1)" | tee -a "$LOGFILE"
 else
-  echo "   ⚠️  sf64.o2r not found — will be generated on first launch" | tee -a "$LOGFILE"
+  echo "   ❌ sf64.o2r not found — build cannot proceed" | tee -a "$LOGFILE"
 fi
 
 if [[ -f "$BUILD_DIR/starship.o2r" ]]; then
   echo "   ✅ starship.o2r: $(du -h "$BUILD_DIR/starship.o2r" | cut -f1)" | tee -a "$LOGFILE"
 else
-  echo "   ⚠️  starship.o2r not found — check build output" | tee -a "$LOGFILE"
+  echo "   ❌ starship.o2r not found — build cannot proceed" | tee -a "$LOGFILE"
 fi
 
 # ── Summary ───────────────────────────────────────────────────────────────────
