@@ -4,8 +4,8 @@ macOS Intel build, bundle, and packaging scripts for the
 [HarbourMasters/Starship](https://github.com/HarbourMasters/Starship) SF64 PC port —
 targeting **Intel Macs (x86_64) on macOS Tahoe and later**.
 
-Follows the same conventions as
-[perfectdark-macvanta](https://github.com/mkoterski/perfectdark-macvanta).
+Follows the same conventions as my other similar projects such as 
+[perfectdark-macvanta](https://github.com/mkoterski/perfectdark-macvanta) and [spaghettikart-maccheese](https://github.com/mkoterski/spaghettikart-maccheese).
 
 > ⚠️ You need a legally obtained Star Fox 64 N64 ROM to use this.
 > The required version is **US Rev 1** (`SHA1: 09F0D105F476B00EFA5303A3EBC42E60A7753B7A`).
